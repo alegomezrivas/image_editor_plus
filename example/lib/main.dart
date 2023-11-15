@@ -35,6 +35,14 @@ class _ImageEditorExampleState extends State<ImageEditorExample> {
 
   @override
   Widget build(BuildContext context) {
+    ImageEditor.i18n({
+      'Crop image': 'Recortar imagen',
+      'No Filter': 'Original',
+      'Edit image': 'Editar imagen',
+      'Freeform': 'Personalizado',
+      'Background Layer': 'Capa de fondo',
+      'Add filters': 'Agregar filtros',
+    });
     return Scaffold(
       appBar: AppBar(
         title: const Text("ImageEditor Example"),
@@ -43,7 +51,7 @@ class _ImageEditorExampleState extends State<ImageEditorExample> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (imageData != null) Image.memory(imageData!),
+          if (imageData != null) Expanded(child: Image.memory(imageData!)),
           const SizedBox(height: 16),
           ElevatedButton(
             child: const Text("Single image editor"),
@@ -53,28 +61,6 @@ class _ImageEditorExampleState extends State<ImageEditorExample> {
                 MaterialPageRoute(
                   builder: (context) => ImageEditor(
                     image: imageData,
-                  ),
-                ),
-              );
-
-              // replace with edited image
-              if (editedImage != null) {
-                imageData = editedImage;
-                setState(() {});
-              }
-            },
-          ),
-          ElevatedButton(
-            child: const Text("Multiple image editor"),
-            onPressed: () async {
-              var editedImage = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ImageEditor(
-                    images: [
-                      imageData,
-                      imageData,
-                    ],
                   ),
                 ),
               );

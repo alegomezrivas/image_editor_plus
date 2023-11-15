@@ -258,7 +258,7 @@ class _ManageLayersOverlayState extends State<ManageLayersOverlay> {
                           )
                         else
                           Text(
-                            layer.runtimeType.toString(),
+                            i18n('Background Layer'),
                             style: const TextStyle(
                               color: Colors.white,
                             ),

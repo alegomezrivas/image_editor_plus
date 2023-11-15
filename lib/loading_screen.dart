@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_editor_plus/data/constants.dart';
 
 class LoadingScreen {
   final GlobalKey globalKey;
@@ -10,20 +11,44 @@ class LoadingScreen {
 
     showDialog<String>(
       context: globalKey.currentContext!,
-      builder: (BuildContext context) => const Scaffold(
-        backgroundColor: Color.fromRGBO(0, 0, 0, 0),
-        body: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              CircularProgressIndicator(
-                semanticsLabel: 'Linear progress indicator',
+      builder: (BuildContext context) {
+        return Material(
+          color: Colors.transparent,
+          child: WillPopScope(
+            onWillPop: () => Future.value(false),
+            child: const Center(
+              child: SizedBox(
+                height: 80,
+                child: Stack(
+                  children: [
+                    Center(
+                      child: SizedBox(
+                        width: 75,
+                        height: 75,
+                        child: CircularProgressIndicator(
+                          semanticsLabel: 'Linear progress indicator',
+                          color: AppColors.accent,
+                        ),
+                      ),
+                    ),
+                    Center(
+                      child: SizedBox(
+                        width: 65,
+                        height: 65,
+                        child: CircleAvatar(
+                          backgroundImage: AssetImage(
+                            'assets/tf_icon.png',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

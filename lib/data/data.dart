@@ -1,4 +1,4 @@
-Map<String, String> emojiWeights = {};
+// Map<String, String> emojiWeights = {};
 
 List<String> emojis = [
   '😀',
