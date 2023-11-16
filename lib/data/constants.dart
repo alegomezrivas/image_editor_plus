@@ -245,3 +245,7 @@ class TextStyles {
     color: AppColors.textColorLight,
   );
 }
+
+class AppIcons {
+  static const String icon = 'assets/tf_icon.png';
+}
