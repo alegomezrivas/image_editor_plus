@@ -375,16 +375,44 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
         body: Stack(
           children: [
             Center(
-              child: Screenshot(
-                controller: screenshotController,
-                child: ZoomOverlay(
-                  modalBarrierColor: Colors.black12, // Optional
-                  minScale: 0.5, // Optional
-                  maxScale: 3.0, // Optional
-                  animationCurve: Curves.fastOutSlowIn,
-                  animationDuration: const Duration(milliseconds: 300),
-                  twoTouchOnly: true,
-                  child: layersStack,
+              child: SizedBox(
+                height: currentImage.height / pixelRatio,
+                width: currentImage.width / pixelRatio,
+                child: Screenshot(
+                  controller: screenshotController,
+                  child: RotatedBox(
+                    quarterTurns: rotateValue,
+                    child: Transform(
+                      transform: Matrix4(
+                        1,
+                        0,
+                        0,
+                        0,
+                        0,
+                        1,
+                        0,
+                        0,
+                        0,
+                        0,
+                        1,
+                        0,
+                        x,
+                        y,
+                        0,
+                        1 / scaleFactor,
+                      )..rotateY(flipValue),
+                      alignment: FractionalOffset.center,
+                      child: ZoomOverlay(
+                        modalBarrierColor: Colors.black12, // Optional
+                        minScale: 0.5, // Optional
+                        maxScale: 3.0, // Optional
+                        animationCurve: Curves.fastOutSlowIn,
+                        animationDuration: const Duration(milliseconds: 300),
+                        twoTouchOnly: true,
+                        child: layersStack,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
