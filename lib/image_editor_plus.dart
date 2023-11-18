@@ -886,7 +886,7 @@ class _ImageFiltersState extends State<ImageFilters> {
   late img.Image decodedImage;
   ColorFilterGenerator selectedFilter = PresetFilters.none;
   Uint8List resizedImage = Uint8List.fromList([]);
-  double filterOpacity = 0.5;
+  double filterOpacity = 1;
   Uint8List? filterAppliedImage;
   ScreenshotController screenshotController = ScreenshotController();
   late List<ColorFilterGenerator> filters;
