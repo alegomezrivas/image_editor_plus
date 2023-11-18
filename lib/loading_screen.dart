@@ -36,7 +36,7 @@ class LoadingScreen {
                         width: 65,
                         height: 65,
                         child: CircleAvatar(
-                          backgroundImage: AssetImage(AppIcons.icon),
+                          backgroundImage: AssetImage('assets/icon.png'),
                         ),
                       ),
                     ),
