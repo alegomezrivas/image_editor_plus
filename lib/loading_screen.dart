@@ -16,12 +16,12 @@ class LoadingScreen {
           color: Colors.transparent,
           child: WillPopScope(
             onWillPop: () => Future.value(false),
-            child: Center(
+            child: const Center(
               child: SizedBox(
                 height: 80,
                 child: Stack(
                   children: [
-                    const Center(
+                    Center(
                       child: SizedBox(
                         width: 75,
                         height: 75,
@@ -35,12 +35,9 @@ class LoadingScreen {
                       child: SizedBox(
                         width: 65,
                         height: 65,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(50.0),
-                          child: Image.asset(
-                            'assets/icon.png',
-                            fit: BoxFit.contain,
-                          ),
+                        child: CircleAvatar(
+                          backgroundColor: AppColors.mediumAccent,
+                          backgroundImage: AssetImage('assets/icon.png'),
                         ),
                       ),
                     ),

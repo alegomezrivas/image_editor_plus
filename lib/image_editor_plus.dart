@@ -661,7 +661,7 @@ class ImageCropper extends StatefulWidget {
     super.key,
     required this.image,
     this.availableRatios = const [
-      o.AspectRatio(title: 'Freeform'),
+      o.AspectRatio(title: 'Custom'),
       o.AspectRatio(title: '1:1', ratio: 1),
       o.AspectRatio(title: '4:3', ratio: 4 / 3),
       o.AspectRatio(title: '5:4', ratio: 5 / 4),
