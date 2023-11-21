@@ -39,7 +39,7 @@ class _ImageEditorExampleState extends State<ImageEditorExample> {
       'Crop image': 'Recortar imagen',
       'No Filter': 'Original',
       'Edit image': 'Editar imagen',
-      'Freeform': 'Personalizado',
+      'Custom': 'Personalizado',
       'Background Layer': 'Capa de fondo',
       'Add filters': 'Agregar filtros',
     });

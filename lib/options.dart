@@ -17,7 +17,7 @@ class CropOption {
   const CropOption({
     this.reversible = true,
     this.ratios = const [
-      AspectRatio(title: 'Freeform'),
+      AspectRatio(title: 'Custom'),
       AspectRatio(title: '1:1', ratio: 1),
       AspectRatio(title: '4:3', ratio: 4 / 3),
       AspectRatio(title: '5:4', ratio: 5 / 4),
