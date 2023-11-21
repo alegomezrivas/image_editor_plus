@@ -97,27 +97,27 @@ class ImageEditor extends StatelessWidget {
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.black87,
-      iconTheme: IconThemeData(color: Colors.white),
+      iconTheme: IconThemeData(color: AppColors.backgroundLighter),
       systemOverlayStyle: SystemUiOverlayStyle.light,
-      toolbarTextStyle: TextStyle(color: Colors.white),
-      titleTextStyle: TextStyle(color: Colors.white),
+      toolbarTextStyle: TextStyle(color: AppColors.backgroundLighter),
+      titleTextStyle: TextStyle(color: AppColors.backgroundLighter),
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Colors.black,
     ),
     iconTheme: const IconThemeData(
-      color: Colors.white,
+      color: AppColors.backgroundLighter,
     ),
     textTheme: const TextTheme(
-      bodyMedium: TextStyle(color: Colors.white),
+      bodyMedium: TextStyle(color: AppColors.backgroundLighter),
     ),
   );
 
   /// Set custom theme properties default is light theme with black text
   static ThemeData themeLight = ThemeData(
-    scaffoldBackgroundColor: Colors.white,
+    scaffoldBackgroundColor: AppColors.backgroundLighter,
     colorScheme: const ColorScheme.dark(
-      background: Colors.white,
+      background: AppColors.backgroundLighter,
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.white70,
@@ -127,7 +127,7 @@ class ImageEditor extends StatelessWidget {
       titleTextStyle: TextStyle(color: Colors.black),
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.backgroundLighter,
     ),
     iconTheme: const IconThemeData(
       color: Colors.black,
@@ -197,8 +197,8 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                 icon: Icon(
                   Icons.undo,
                   color: layers.length > 1 || removedLayers.isNotEmpty
-                      ? Colors.pink
-                      : Colors.grey,
+                      ? AppColors.mediaColor
+                      : AppColors.mediaAccentColor,
                 ),
                 onPressed: () {
                   if (removedLayers.isNotEmpty) {
@@ -218,7 +218,9 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 icon: Icon(
                   Icons.redo,
-                  color: undoLayers.isNotEmpty ? Colors.pink : Colors.grey,
+                  color: undoLayers.isNotEmpty
+                      ? AppColors.mediaColor
+                      : AppColors.mediaAccentColor,
                 ),
                 onPressed: () {
                   if (undoLayers.isEmpty) return;
@@ -256,7 +258,7 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                 ),
               IconButton(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                icon: const Icon(Icons.check, color: Colors.pink),
+                icon: const Icon(Icons.check, color: AppColors.mediaColor),
                 onPressed: () async {
                   resetTransformation();
                   setState(() {});
@@ -355,7 +357,7 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
       child: Scaffold(
         key: scaffoldGlobalKey,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.backgroundLighter,
           leading: IconButton(
             onPressed: () {
               Navigator.of(context).pop();
@@ -462,7 +464,7 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
           height: 100 + MediaQuery.of(context).padding.bottom,
           padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: const BoxDecoration(
-            color: Colors.white,
+            color: AppColors.backgroundLighter,
             shape: BoxShape.rectangle,
             // boxShadow: [
             //   BoxShadow(blurRadius: 0.1),
@@ -640,7 +642,7 @@ class BottomButton extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: Colors.pink,
+              color: AppColors.mediaColor,
               size: 32,
             ),
             // const SizedBox(height: 8),
@@ -704,7 +706,7 @@ class _ImageCropperState extends State<ImageCropper> {
       data: ImageEditor.themeLight,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.backgroundLighter,
           leading: IconButton(
             onPressed: () {
               Navigator.of(context).pop();
@@ -722,7 +724,7 @@ class _ImageCropperState extends State<ImageCropper> {
           actions: [
             IconButton(
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              icon: const Icon(Icons.check, color: AppColors.accent),
+              icon: const Icon(Icons.check, color: AppColors.mediaColor),
               onPressed: () async {
                 LoadingScreen(scaffoldGlobalKey).show();
                 var state = _controller.currentState;
@@ -745,7 +747,7 @@ class _ImageCropperState extends State<ImageCropper> {
           ],
         ),
         body: Container(
-          color: Colors.white,
+          color: AppColors.backgroundLighter,
           child: ExtendedImage.memory(
             widget.image,
             cacheRawData: true,
@@ -755,7 +757,7 @@ class _ImageCropperState extends State<ImageCropper> {
             initEditorConfigHandler: (state) {
               return EditorConfig(
                 cropAspectRatio: aspectRatio,
-                cornerColor: AppColors.accent,
+                cornerColor: AppColors.mediaColor,
               );
             },
           ),
@@ -765,7 +767,7 @@ class _ImageCropperState extends State<ImageCropper> {
           height: 100 + MediaQuery.of(context).padding.bottom,
           padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: const BoxDecoration(
-            color: Colors.white,
+            color: AppColors.backgroundLighter,
             shape: BoxShape.rectangle,
             // boxShadow: [
             //   BoxShadow(blurRadius: 0.1),
@@ -785,8 +787,9 @@ class _ImageCropperState extends State<ImageCropper> {
                       ),
                       icon: Icon(
                         Icons.portrait,
-                        color:
-                            isLandscape ? Colors.grey[700] : AppColors.accent,
+                        color: isLandscape
+                            ? AppColors.mediaAccentColor
+                            : AppColors.mediaColor,
                       ),
                       onPressed: () {
                         isLandscape = false;
@@ -802,8 +805,9 @@ class _ImageCropperState extends State<ImageCropper> {
                       ),
                       icon: Icon(
                         Icons.landscape,
-                        color:
-                            isLandscape ? AppColors.accent : Colors.grey[700],
+                        color: isLandscape
+                            ? AppColors.mediaColor
+                            : AppColors.mediaAccentColor,
                       ),
                       onPressed: () {
                         isLandscape = true;
@@ -827,8 +831,8 @@ class _ImageCropperState extends State<ImageCropper> {
                             i18n(ratio.title),
                             style: TextStyle(
                               color: currentRatio == ratio.ratio
-                                  ? AppColors.accent
-                                  : Colors.grey[700],
+                                  ? AppColors.mediaColor
+                                  : AppColors.mediaAccentColor,
                             ),
                           )),
                     )
@@ -910,15 +914,12 @@ class _ImageFiltersState extends State<ImageFilters> {
       data: ImageEditor.themeLight,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.backgroundLighter,
           leading: IconButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            icon: const Icon(
-              Icons.close_rounded,
-              color: AppColors.textColor,
-            ),
+            icon: const Icon(Icons.close, color: AppColors.textColor),
           ),
           title: Text(
             i18n('Add filters'),
@@ -928,7 +929,7 @@ class _ImageFiltersState extends State<ImageFilters> {
           actions: [
             IconButton(
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              icon: const Icon(Icons.check, color: AppColors.accent),
+              icon: const Icon(Icons.check, color: AppColors.mediaColor),
               onPressed: () async {
                 loadingScreen.show();
                 var data = await screenshotController.capture();
@@ -967,7 +968,7 @@ class _ImageFiltersState extends State<ImageFilters> {
           height: 190 + MediaQuery.of(context).padding.bottom,
           padding: const EdgeInsets.symmetric(vertical: 4),
           decoration: const BoxDecoration(
-            color: Colors.white,
+            color: AppColors.backgroundLighter,
             shape: BoxShape.rectangle,
             // boxShadow: [
             //   BoxShadow(blurRadius: 0.1),
@@ -984,9 +985,9 @@ class _ImageFiltersState extends State<ImageFilters> {
                         SliderTheme(
                           data: SliderTheme.of(context).copyWith(
                             trackHeight: 1.0,
-                            activeTrackColor: AppColors.accent,
-                            inactiveTrackColor: AppColors.accent,
-                            thumbColor: AppColors.accent,
+                            activeTrackColor: AppColors.mediaColor,
+                            inactiveTrackColor: AppColors.mediaColor,
+                            thumbColor: AppColors.mediaColor,
                             thumbShape: const RoundSliderThumbShape(
                               enabledThumbRadius: 10.0,
                             ),
@@ -1028,8 +1029,8 @@ class _ImageFiltersState extends State<ImageFilters> {
                                 borderRadius: BorderRadius.circular(48),
                                 border: Border.all(
                                   color: selectedFilter == filter
-                                      ? AppColors.accent
-                                      : Colors.grey,
+                                      ? AppColors.mediaColor
+                                      : AppColors.mediaAccentColor,
                                   width: 2,
                                 ),
                               ),
