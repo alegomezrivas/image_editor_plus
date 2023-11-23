@@ -369,7 +369,7 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
           ),
           title: Text(
             i18n('Edit image'),
-            style: const TextStyle(color: AppColors.textColor, fontSize: 18),
+            style: TextStyles.titlePost,
           ),
           actions: filterActions,
         ),
