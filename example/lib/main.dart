@@ -36,6 +36,7 @@ class _ImageEditorExampleState extends State<ImageEditorExample> {
   @override
   Widget build(BuildContext context) {
     ImageEditor.i18n({
+      'Processing...': 'Procesando...',
       'Crop image': 'Recortar imagen',
       'No Filter': 'Original',
       'Edit image': 'Editar imagen',

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_editor_plus/data/constants.dart';
+import 'package:image_editor_plus/image_editor_plus.dart';
 
 class LoadingScreen {
   final GlobalKey globalKey;
@@ -12,37 +13,34 @@ class LoadingScreen {
     showDialog<String>(
       context: globalKey.currentContext!,
       builder: (BuildContext context) {
-        return Material(
-          color: Colors.transparent,
-          child: WillPopScope(
-            onWillPop: () => Future.value(false),
-            child: const Center(
-              child: SizedBox(
-                height: 80,
-                child: Stack(
+        return Center(
+          child: Material(
+            color: Colors.transparent,
+            child: WillPopScope(
+              onWillPop: () => Future.value(false),
+              child: AlertDialog(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Center(
-                      child: SizedBox(
-                        width: 75,
-                        height: 75,
-                        child: CircularProgressIndicator(
-                          semanticsLabel: 'Linear progress indicator',
-                          color: AppColors.accent,
-                        ),
-                      ),
+                    const CircularProgressIndicator(
+                      semanticsLabel: 'Linear progress indicator',
+                      color: AppColors.accent,
                     ),
-                    Center(
-                      child: SizedBox(
-                        width: 65,
-                        height: 65,
-                        child: CircleAvatar(
-                          backgroundColor: AppColors.mediumAccent,
-                          backgroundImage: AssetImage('assets/icon.png'),
-                        ),
+                    const SizedBox(width: 24),
+                    Text(
+                      i18n('Processing...'),
+                      style: const TextStyle(
+                        color: AppColors.textColor,
+                        fontSize: 14,
                       ),
                     ),
                   ],
                 ),
+                actionsAlignment: MainAxisAlignment.center,
+                actionsPadding: const EdgeInsets.symmetric(vertical: 10),
+                backgroundColor: Colors.white,
               ),
             ),
           ),

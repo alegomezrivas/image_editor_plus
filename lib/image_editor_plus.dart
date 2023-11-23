@@ -371,7 +371,6 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
             i18n('Edit image'),
             style: const TextStyle(color: AppColors.textColor, fontSize: 18),
           ),
-          // centerTitle: true,
           actions: filterActions,
         ),
         body: Stack(
@@ -466,9 +465,6 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
           decoration: const BoxDecoration(
             color: AppColors.backgroundLighter,
             shape: BoxShape.rectangle,
-            // boxShadow: [
-            //   BoxShadow(blurRadius: 0.1),
-            // ],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -692,12 +688,11 @@ class _ImageCropperState extends State<ImageCropper> {
 
   @override
   void initState() {
+    super.initState();
     if (widget.availableRatios.isNotEmpty) {
       currentRatio = widget.availableRatios.first.ratio;
     }
     _controller.currentState?.rotate(right: true);
-
-    super.initState();
   }
 
   @override
@@ -769,9 +764,6 @@ class _ImageCropperState extends State<ImageCropper> {
           decoration: const BoxDecoration(
             color: AppColors.backgroundLighter,
             shape: BoxShape.rectangle,
-            // boxShadow: [
-            //   BoxShadow(blurRadius: 0.1),
-            // ],
           ),
           child: Center(
             child: SingleChildScrollView(
@@ -934,7 +926,9 @@ class _ImageFiltersState extends State<ImageFilters> {
                 loadingScreen.show();
                 var data = await screenshotController.capture();
                 loadingScreen.hide();
-
+                // Go back twice, to fix the problem when applying the filter
+                // and cropping the image later
+                if (mounted) Navigator.pop(context, data);
                 if (mounted) Navigator.pop(context, data);
               },
             ),
@@ -970,9 +964,6 @@ class _ImageFiltersState extends State<ImageFilters> {
           decoration: const BoxDecoration(
             color: AppColors.backgroundLighter,
             shape: BoxShape.rectangle,
-            // boxShadow: [
-            //   BoxShadow(blurRadius: 0.1),
-            // ],
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
