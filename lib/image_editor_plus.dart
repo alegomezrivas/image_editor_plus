@@ -180,6 +180,8 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
   @override
   void dispose() {
     layers.clear();
+    undoLayers.clear();
+    removedLayers.clear();
     super.dispose();
   }
 
@@ -316,6 +318,43 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
     return screenshotController.capture(pixelRatio: pixelRatio);
   }
 
+  void showImageWithZoomOverlay(BuildContext context, Widget widget) {
+    showDialog(
+      context: context,
+      builder: (context) => Material(
+        color: Colors.white,
+        child: GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: Stack(
+            alignment: AlignmentDirectional.center,
+            children: [
+              ZoomOverlay(
+                modalBarrierColor: Colors.black12, // Optional
+                minScale: 0.5, // Optional
+                maxScale: 5.0, // Optional
+                animationCurve: Curves.fastOutSlowIn,
+                animationDuration: const Duration(milliseconds: 300),
+                twoTouchOnly: true,
+                child: widget,
+              ),
+              Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  padding: const EdgeInsets.only(top: 8, left: 8),
+                  icon: const Icon(Icons.close, color: AppColors.textColor),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierColor: Colors.white10,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     viewportSize = MediaQuery.of(context).size;
@@ -373,90 +412,119 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
           ),
           actions: filterActions,
         ),
-        body: Stack(
-          children: [
-            Center(
-              child: SizedBox(
-                height: currentImage.height / pixelRatio,
-                width: currentImage.width / pixelRatio,
-                child: Screenshot(
-                  controller: screenshotController,
-                  child: RotatedBox(
-                    quarterTurns: rotateValue,
-                    child: Transform(
-                      transform: Matrix4(
-                        1,
-                        0,
-                        0,
-                        0,
-                        0,
-                        1,
-                        0,
-                        0,
-                        0,
-                        0,
-                        1,
-                        0,
-                        x,
-                        y,
-                        0,
-                        1 / scaleFactor,
-                      )..rotateY(flipValue),
-                      alignment: FractionalOffset.center,
-                      child: ZoomOverlay(
-                        modalBarrierColor: Colors.black12, // Optional
-                        minScale: 0.5, // Optional
-                        maxScale: 3.0, // Optional
-                        animationCurve: Curves.fastOutSlowIn,
-                        animationDuration: const Duration(milliseconds: 300),
-                        twoTouchOnly: true,
-                        child: layersStack,
+        body: Padding(
+          padding: const EdgeInsets.only(top: 44),
+          child: Stack(
+            children: [
+              GestureDetector(
+                // onTap: () => showImageWithZoomOverlay(context, layersStack),
+                onScaleStart: (details) {
+                  lastScaleFactor = scaleFactor;
+                },
+                onScaleUpdate: (details) {
+                  // move
+                  // if (details.pointerCount == 1) {
+                  //   print(details.focalPointDelta);
+                  //   x += details.focalPointDelta.dx;
+                  //   y += details.focalPointDelta.dy;
+                  //   setState(() {});
+                  // }
+
+                  // scale
+                  if (details.pointerCount == 2) {
+                    // don't update the UI if the scale didn't change
+                    if (details.scale == 1.0) {
+                      return;
+                    }
+                    setState(() {
+                      scaleFactor =
+                          (lastScaleFactor * details.scale).clamp(0.5, 5.0);
+                      scaleFactor = scaleFactor * lastScaleFactor;
+                    });
+                  }
+                },
+                onScaleEnd: (details) {
+                  scaleFactor = 1;
+                  x = 0;
+                  y = 0;
+                  setState(() {});
+                },
+                child: Center(
+                  child: SizedBox(
+                    height: currentImage.height / pixelRatio,
+                    width: currentImage.width / pixelRatio,
+                    child: Screenshot(
+                      controller: screenshotController,
+                      child: RotatedBox(
+                        quarterTurns: rotateValue,
+                        child: Transform(
+                          transform: Matrix4(
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            1,
+                            0,
+                            x,
+                            y,
+                            0,
+                            1 / scaleFactor,
+                          )..rotateY(flipValue),
+                          alignment: FractionalOffset.center,
+                          child: layersStack,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            if (layers.length > 1)
-              Positioned(
-                bottom: 20,
-                left: 0,
-                child: Container(
-                  height: 48,
-                  width: 48,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withAlpha(100),
-                    borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(20),
-                      bottomRight: Radius.circular(20),
+              if (layers.length > 1)
+                Positioned(
+                  bottom: 20,
+                  left: 0,
+                  child: Container(
+                    height: 48,
+                    width: 48,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withAlpha(100),
+                      borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                    ),
+                    child: IconButton(
+                      iconSize: 22,
+                      color: Colors.white60,
+                      padding: const EdgeInsets.all(0),
+                      onPressed: () {
+                        showModalBottomSheet(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(16),
+                              topLeft: Radius.circular(16),
+                            ),
+                          ),
+                          context: context,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => ManageLayersOverlay(
+                            layers: layers,
+                            onUpdate: () => setState(() {}),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.layers),
                     ),
                   ),
-                  child: IconButton(
-                    iconSize: 22,
-                    color: Colors.white60,
-                    padding: const EdgeInsets.all(0),
-                    onPressed: () {
-                      showModalBottomSheet(
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(16),
-                            topLeft: Radius.circular(16),
-                          ),
-                        ),
-                        context: context,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => ManageLayersOverlay(
-                          layers: layers,
-                          onUpdate: () => setState(() {}),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.layers),
-                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
         bottomNavigationBar: Container(
           alignment: Alignment.bottomCenter,
@@ -551,6 +619,11 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                     rotateValue = 0;
 
                     await currentImage.load(croppedImage);
+                    // Remove duplicate layers
+                    if (layers.isNotEmpty && layers.length > 1) {
+                      layers.removeLast();
+                    }
+
                     setState(() {});
                   },
                 ),
@@ -889,6 +962,7 @@ class _ImageFiltersState extends State<ImageFilters> {
 
   @override
   void initState() {
+    super.initState();
     filters = [
       PresetFilters.none,
       ...(widget.options?.filters ?? presetFiltersList.sublist(1))
@@ -896,8 +970,6 @@ class _ImageFiltersState extends State<ImageFilters> {
 
     // decodedImage = img.decodeImage(widget.image)!;
     // resizedImage = img.copyResize(decodedImage, height: 64).getBytes();
-
-    super.initState();
   }
 
   @override
@@ -926,9 +998,6 @@ class _ImageFiltersState extends State<ImageFilters> {
                 loadingScreen.show();
                 var data = await screenshotController.capture();
                 loadingScreen.hide();
-                // Go back twice, to fix the problem when applying the filter
-                // and cropping the image later
-                if (mounted) Navigator.pop(context, data);
                 if (mounted) Navigator.pop(context, data);
               },
             ),
