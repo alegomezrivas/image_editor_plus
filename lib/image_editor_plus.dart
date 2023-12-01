@@ -556,7 +556,14 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                     // }
 
                     LoadingScreen(scaffoldGlobalKey).show();
-                    var mergedImage = await getMergedImage();
+                    // Change the way you combine layers, to preserve image transformations,
+                    // say rotation or flip.
+                    // To revert the change, uncomment the line below
+                    // And remove flip and rotate values
+                    // var mergedImage = await getMergedImage();
+                    var mergedImage = await screenshotController.capture(
+                      pixelRatio: pixelRatio,
+                    );
                     LoadingScreen(scaffoldGlobalKey).hide();
 
                     if (!mounted) return;
@@ -573,6 +580,9 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
 
                     if (filterAppliedImage == null) return;
 
+                    // Added this, to preserve image transformations
+                    flipValue = 0;
+                    rotateValue = 0;
                     removedLayers.clear();
                     undoLayers.clear();
 
@@ -598,7 +608,13 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                   onTap: () async {
                     resetTransformation();
                     LoadingScreen(scaffoldGlobalKey).show();
-                    var mergedImage = await getMergedImage();
+                    // Change the way you combine layers, to preserve image transformations,
+                    // say rotation or flip
+                    // To revert the change, uncomment the line below
+                    // var mergedImage = await getMergedImage();
+                    var mergedImage = await screenshotController.capture(
+                      pixelRatio: pixelRatio,
+                    );
                     LoadingScreen(scaffoldGlobalKey).hide();
 
                     if (!mounted) return;
