@@ -361,6 +361,7 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
     // pixelRatio = MediaQuery.of(context).devicePixelRatio;
 
     var layersStack = Stack(
+      alignment: Alignment.center,
       children: layers.map((layerItem) {
         // Background layer
         if (layerItem is BackgroundLayerData) {
@@ -836,6 +837,7 @@ class _ImageCropperState extends State<ImageCropper> {
             widget.image,
             cacheRawData: true,
             fit: BoxFit.contain,
+            filterQuality: FilterQuality.high,
             extendedImageEditorKey: _controller,
             mode: ExtendedImageMode.editor,
             initEditorConfigHandler: (state) {
