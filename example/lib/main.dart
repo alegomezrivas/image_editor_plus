@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_editor_plus/data/settings.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 
 void main() {
@@ -62,6 +63,19 @@ class _ImageEditorExampleState extends State<ImageEditorExample> {
                 MaterialPageRoute(
                   builder: (context) => ImageEditor(
                     image: imageData,
+                    config: const Settings(
+                        // backgroundColor: Colors.white,
+                        // primaryColor: Colors.deepOrange,
+                        // secondaryColor: Colors.grey,
+                        // textColor: Colors.black87,
+                        // iconBack: Icons.arrow_back_ios_new,
+                        // iconSave: Icons.save_alt_rounded,
+                        // titleStyle: TextStyle(
+                        //   fontWeight: FontWeight.w500,
+                        //   fontSize: 19,
+                        //   color: Colors.black87,
+                        // ),
+                        ),
                   ),
                 ),
               );

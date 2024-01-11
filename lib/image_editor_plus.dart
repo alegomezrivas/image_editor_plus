@@ -8,6 +8,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
+import 'package:image_editor_plus/data/settings.dart';
 import 'package:image_editor_plus/data/constants.dart';
 import 'package:image_editor_plus/data/image_item.dart';
 import 'package:image_editor_plus/data/layer.dart';
@@ -32,6 +33,7 @@ String i18n(String sourceString) =>
 class ImageEditor extends StatelessWidget {
   final dynamic image;
   final String? savePath;
+  final Settings config;
 
   final o.ImagePickerOption? imagePickerOption;
   final o.CropOption? cropOption;
@@ -49,6 +51,7 @@ class ImageEditor extends StatelessWidget {
     this.savePath,
     Color? appBarColor,
     this.imagePickerOption,
+    this.config = const Settings(),
     this.cropOption = const o.CropOption(),
     this.blurOption = const o.BlurOption(),
     this.brushOption = const o.BrushOption(),
@@ -70,6 +73,7 @@ class ImageEditor extends StatelessWidget {
 
     return SingleImageEditor(
       image: image,
+      config: config,
       savePath: savePath,
       imagePickerOption: imagePickerOption,
       cropOption: cropOption,
@@ -92,32 +96,26 @@ class ImageEditor extends StatelessWidget {
   /// Set custom theme properties default is dark theme with white text
   static ThemeData theme = ThemeData(
     scaffoldBackgroundColor: Colors.black,
-    colorScheme: const ColorScheme.dark(
-      background: Colors.black,
-    ),
+    colorScheme: const ColorScheme.dark(background: Colors.black),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.black87,
-      iconTheme: IconThemeData(color: AppColors.backgroundLighter),
+      iconTheme: IconThemeData(color: Colors.white),
       systemOverlayStyle: SystemUiOverlayStyle.light,
-      toolbarTextStyle: TextStyle(color: AppColors.backgroundLighter),
-      titleTextStyle: TextStyle(color: AppColors.backgroundLighter),
+      toolbarTextStyle: TextStyle(color: Colors.white),
+      titleTextStyle: TextStyle(color: Colors.white),
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Colors.black,
     ),
-    iconTheme: const IconThemeData(
-      color: AppColors.backgroundLighter,
-    ),
-    textTheme: const TextTheme(
-      bodyMedium: TextStyle(color: AppColors.backgroundLighter),
-    ),
+    iconTheme: const IconThemeData(color: Colors.white),
+    textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.white)),
   );
 
   /// Set custom theme properties default is light theme with black text
   static ThemeData themeLight = ThemeData(
-    scaffoldBackgroundColor: AppColors.backgroundLighter,
+    scaffoldBackgroundColor: Colors.white,
     colorScheme: const ColorScheme.dark(
-      background: AppColors.backgroundLighter,
+      background: Colors.white,
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.white70,
@@ -127,14 +125,10 @@ class ImageEditor extends StatelessWidget {
       titleTextStyle: TextStyle(color: Colors.black),
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: AppColors.backgroundLighter,
+      backgroundColor: Colors.white,
     ),
-    iconTheme: const IconThemeData(
-      color: Colors.black,
-    ),
-    textTheme: const TextTheme(
-      bodyMedium: TextStyle(color: Colors.black),
-    ),
+    iconTheme: const IconThemeData(color: Colors.black),
+    textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.black)),
   );
 }
 
@@ -142,6 +136,7 @@ class ImageEditor extends StatelessWidget {
 class SingleImageEditor extends StatefulWidget {
   final dynamic image;
   final String? savePath;
+  final Settings config;
 
   final o.ImagePickerOption? imagePickerOption;
   final o.CropOption? cropOption;
@@ -158,6 +153,7 @@ class SingleImageEditor extends StatefulWidget {
     this.image,
     this.savePath,
     this.imagePickerOption,
+    required this.config,
     this.cropOption = const o.CropOption(),
     this.blurOption = const o.BlurOption(),
     this.brushOption = const o.BrushOption(),
@@ -197,10 +193,10 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
               IconButton(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 icon: Icon(
-                  Icons.undo,
+                  widget.config.iconUndo,
                   color: layers.length > 1 || removedLayers.isNotEmpty
-                      ? AppColors.mediaColor
-                      : AppColors.mediaAccentColor,
+                      ? widget.config.primaryColor
+                      : widget.config.secondaryColor,
                 ),
                 onPressed: () {
                   if (removedLayers.isNotEmpty) {
@@ -219,10 +215,10 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
               IconButton(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 icon: Icon(
-                  Icons.redo,
+                  widget.config.iconRedo,
                   color: undoLayers.isNotEmpty
-                      ? AppColors.mediaColor
-                      : AppColors.mediaAccentColor,
+                      ? widget.config.primaryColor
+                      : widget.config.secondaryColor,
                 ),
                 onPressed: () {
                   if (undoLayers.isEmpty) return;
@@ -232,40 +228,17 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                   setState(() {});
                 },
               ),
-              if (widget.imagePickerOption?.pickFromGallery == true)
-                IconButton(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  icon: const Icon(Icons.photo),
-                  onPressed: () async {
-                    var image =
-                        await picker.pickImage(source: ImageSource.gallery);
-
-                    if (image == null) return;
-
-                    loadImage(image);
-                  },
-                ),
-              if (widget.imagePickerOption?.captureFromCamera == true)
-                IconButton(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  icon: const Icon(Icons.camera_alt),
-                  onPressed: () async {
-                    var image =
-                        await picker.pickImage(source: ImageSource.camera);
-
-                    if (image == null) return;
-
-                    loadImage(image);
-                  },
-                ),
               IconButton(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                icon: const Icon(Icons.check, color: AppColors.mediaColor),
+                icon: Icon(
+                  widget.config.iconSave,
+                  color: widget.config.primaryColor,
+                ),
                 onPressed: () async {
                   resetTransformation();
                   setState(() {});
 
-                  loadingScreen.show();
+                  loadingScreen.show(config: widget.config);
 
                   var binaryIntList = await screenshotController.capture(
                       pixelRatio: pixelRatio);
@@ -397,19 +370,19 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
       child: Scaffold(
         key: scaffoldGlobalKey,
         appBar: AppBar(
-          backgroundColor: AppColors.backgroundLighter,
+          backgroundColor: widget.config.backgroundColor,
           leading: IconButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            icon: const Icon(
-              Icons.close_rounded,
-              color: AppColors.textColor,
+            icon: Icon(
+              widget.config.iconBack,
+              color: widget.config.textColor,
             ),
           ),
           title: Text(
             i18n('Edit image'),
-            style: TextStyles.titlePost,
+            style: widget.config.titleStyle,
           ),
           actions: filterActions,
         ),
@@ -423,14 +396,6 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                   lastScaleFactor = scaleFactor;
                 },
                 onScaleUpdate: (details) {
-                  // move
-                  // if (details.pointerCount == 1) {
-                  //   print(details.focalPointDelta);
-                  //   x += details.focalPointDelta.dx;
-                  //   y += details.focalPointDelta.dy;
-                  //   setState(() {});
-                  // }
-
                   // scale
                   if (details.pointerCount == 2) {
                     // don't update the UI if the scale didn't change
@@ -520,7 +485,7 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                           ),
                         );
                       },
-                      icon: const Icon(Icons.layers),
+                      icon: Icon(widget.config.iconLayers),
                     ),
                   ),
                 ),
@@ -531,8 +496,8 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
           alignment: Alignment.bottomCenter,
           height: 100 + MediaQuery.of(context).padding.bottom,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          decoration: const BoxDecoration(
-            color: AppColors.backgroundLighter,
+          decoration: BoxDecoration(
+            color: widget.config.backgroundColor,
             shape: BoxShape.rectangle,
           ),
           child: Row(
@@ -541,8 +506,9 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
             children: <Widget>[
               if (widget.filtersOption != null)
                 BottomButton(
-                  icon: Icons.photo_filter_rounded,
+                  icon: widget.config.iconFilter,
                   text: i18n('Filter'),
+                  config: widget.config,
                   onTap: () async {
                     resetTransformation();
 
@@ -556,7 +522,7 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                     //   }
                     // }
 
-                    LoadingScreen(scaffoldGlobalKey).show();
+                    loadingScreen.show(config: widget.config);
                     // Change the way you combine layers, to preserve image transformations,
                     // say rotation or flip.
                     // To revert the change, uncomment the line below
@@ -565,7 +531,7 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                     var mergedImage = await screenshotController.capture(
                       pixelRatio: pixelRatio,
                     );
-                    LoadingScreen(scaffoldGlobalKey).hide();
+                    loadingScreen.hide();
 
                     if (!mounted) return;
 
@@ -575,6 +541,7 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                         builder: (context) => ImageFilters(
                           image: mergedImage!,
                           options: widget.filtersOption,
+                          config: widget.config,
                         ),
                       ),
                     );
@@ -604,11 +571,12 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                 ),
               if (widget.cropOption != null)
                 BottomButton(
-                  icon: Icons.crop,
+                  icon: widget.config.iconCrop,
                   text: i18n('Crop'),
+                  config: widget.config,
                   onTap: () async {
                     resetTransformation();
-                    LoadingScreen(scaffoldGlobalKey).show();
+                    loadingScreen.show(config: widget.config);
                     // Change the way you combine layers, to preserve image transformations,
                     // say rotation or flip
                     // To revert the change, uncomment the line below
@@ -616,7 +584,7 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                     var mergedImage = await screenshotController.capture(
                       pixelRatio: pixelRatio,
                     );
-                    LoadingScreen(scaffoldGlobalKey).hide();
+                    loadingScreen.hide();
 
                     if (!mounted) return;
 
@@ -625,6 +593,7 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                       MaterialPageRoute(
                         builder: (context) => ImageCropper(
                           image: mergedImage!,
+                          config: widget.config,
                           availableRatios: widget.cropOption!.ratios,
                         ),
                       ),
@@ -646,8 +615,9 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                 ),
               if (widget.flipOption != null)
                 BottomButton(
-                  icon: Icons.flip,
+                  icon: widget.config.iconFlip,
                   text: i18n('Flip'),
+                  config: widget.config,
                   onTap: () {
                     setState(() {
                       flipValue = flipValue == 0 ? math.pi : 0;
@@ -656,8 +626,9 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                 ),
               if (widget.rotateOption != null)
                 BottomButton(
-                  icon: Icons.rotate_left,
+                  icon: widget.config.iconRotateLeft,
                   text: i18n('Rotate left'),
+                  config: widget.config,
                   onTap: () {
                     var t = currentImage.width;
                     currentImage.width = currentImage.height;
@@ -669,8 +640,9 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                 ),
               if (widget.rotateOption != null)
                 BottomButton(
-                  icon: Icons.rotate_right,
+                  icon: widget.config.iconRotateRight,
                   text: i18n('Rotate right'),
+                  config: widget.config,
                   onTap: () {
                     var t = currentImage.width;
                     currentImage.width = currentImage.height;
@@ -705,6 +677,7 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
 /// Button used in bottomNavigationBar in ImageEditor
 class BottomButton extends StatelessWidget {
   final VoidCallback? onTap, onLongPress;
+  final Settings config;
   final IconData icon;
   final String text;
 
@@ -712,6 +685,7 @@ class BottomButton extends StatelessWidget {
     super.key,
     this.onTap,
     this.onLongPress,
+    required this.config,
     required this.icon,
     required this.text,
   });
@@ -728,7 +702,7 @@ class BottomButton extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: AppColors.mediaColor,
+              color: config.primaryColor,
               size: 32,
             ),
             // const SizedBox(height: 8),
@@ -743,11 +717,13 @@ class BottomButton extends StatelessWidget {
 /// Crop given image with various aspect ratios
 class ImageCropper extends StatefulWidget {
   final Uint8List image;
+  final Settings config;
   final List<o.AspectRatio> availableRatios;
 
   const ImageCropper({
     super.key,
     required this.image,
+    required this.config,
     this.availableRatios = const [
       o.AspectRatio(title: 'Custom'),
       o.AspectRatio(title: '1:1', ratio: 1),
@@ -791,31 +767,34 @@ class _ImageCropperState extends State<ImageCropper> {
       data: ImageEditor.themeLight,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: AppColors.backgroundLighter,
+          backgroundColor: widget.config.backgroundColor,
           leading: IconButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            icon: const Icon(
-              Icons.close_rounded,
-              color: AppColors.textColor,
+            icon: Icon(
+              widget.config.iconBack,
+              color: widget.config.textColor,
             ),
           ),
           title: Text(
             i18n('Crop image'),
-            style: const TextStyle(color: AppColors.textColor, fontSize: 18),
+            style: widget.config.titleStyle,
           ),
           centerTitle: true,
           actions: [
             IconButton(
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              icon: const Icon(Icons.check, color: AppColors.mediaColor),
+              icon: Icon(
+                widget.config.iconSave,
+                color: widget.config.primaryColor,
+              ),
               onPressed: () async {
-                LoadingScreen(scaffoldGlobalKey).show();
+                loadingScreen.show(config: widget.config);
                 var state = _controller.currentState;
 
                 if (state == null || state.getCropRect() == null) {
-                  LoadingScreen(scaffoldGlobalKey).hide();
+                  loadingScreen.hide();
                   Navigator.pop(context);
                 }
 
@@ -824,7 +803,7 @@ class _ImageCropperState extends State<ImageCropper> {
                   rect: state.getCropRect()!,
                 );
 
-                LoadingScreen(scaffoldGlobalKey).hide();
+                loadingScreen.hide();
 
                 if (mounted) Navigator.pop(context, data);
               },
@@ -832,7 +811,7 @@ class _ImageCropperState extends State<ImageCropper> {
           ],
         ),
         body: Container(
-          color: AppColors.backgroundLighter,
+          color: widget.config.backgroundColor,
           child: ExtendedImage.memory(
             widget.image,
             cacheRawData: true,
@@ -843,7 +822,7 @@ class _ImageCropperState extends State<ImageCropper> {
             initEditorConfigHandler: (state) {
               return EditorConfig(
                 cropAspectRatio: aspectRatio,
-                cornerColor: AppColors.mediaColor,
+                cornerColor: widget.config.primaryColor,
               );
             },
           ),
@@ -852,8 +831,8 @@ class _ImageCropperState extends State<ImageCropper> {
           alignment: Alignment.bottomCenter,
           height: 100 + MediaQuery.of(context).padding.bottom,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          decoration: const BoxDecoration(
-            color: AppColors.backgroundLighter,
+          decoration: BoxDecoration(
+            color: widget.config.backgroundColor,
             shape: BoxShape.rectangle,
           ),
           child: Center(
@@ -869,10 +848,10 @@ class _ImageCropperState extends State<ImageCropper> {
                         vertical: 4,
                       ),
                       icon: Icon(
-                        Icons.portrait,
+                        widget.config.iconPortrait,
                         color: isLandscape
-                            ? AppColors.mediaAccentColor
-                            : AppColors.mediaColor,
+                            ? widget.config.secondaryColor
+                            : widget.config.primaryColor,
                       ),
                       onPressed: () {
                         isLandscape = false;
@@ -887,10 +866,10 @@ class _ImageCropperState extends State<ImageCropper> {
                         vertical: 4,
                       ),
                       icon: Icon(
-                        Icons.landscape,
+                        widget.config.iconLandscape,
                         color: isLandscape
-                            ? AppColors.mediaColor
-                            : AppColors.mediaAccentColor,
+                            ? widget.config.primaryColor
+                            : widget.config.secondaryColor,
                       ),
                       onPressed: () {
                         isLandscape = true;
@@ -906,18 +885,19 @@ class _ImageCropperState extends State<ImageCropper> {
                         setState(() {});
                       },
                       child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        child: Text(
+                          i18n(ratio.title),
+                          style: widget.config.normalStyle.copyWith(
+                            color: currentRatio == ratio.ratio
+                                ? widget.config.primaryColor
+                                : widget.config.secondaryColor,
                           ),
-                          child: Text(
-                            i18n(ratio.title),
-                            style: TextStyle(
-                              color: currentRatio == ratio.ratio
-                                  ? AppColors.mediaColor
-                                  : AppColors.mediaAccentColor,
-                            ),
-                          )),
+                        ),
+                      ),
                     )
                 ],
               ),
@@ -953,6 +933,7 @@ class _ImageCropperState extends State<ImageCropper> {
 /// Return filter applied Uint8List image
 class ImageFilters extends StatefulWidget {
   final Uint8List image;
+  final Settings config;
 
   /// apply each filter to given image in background and cache it to improve UX
   final bool useCache;
@@ -961,6 +942,7 @@ class ImageFilters extends StatefulWidget {
   const ImageFilters({
     super.key,
     required this.image,
+    required this.config,
     this.useCache = true,
     this.options,
   });
@@ -996,24 +978,27 @@ class _ImageFiltersState extends State<ImageFilters> {
       data: ImageEditor.themeLight,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: AppColors.backgroundLighter,
+          backgroundColor: widget.config.backgroundColor,
           leading: IconButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            icon: const Icon(Icons.close, color: AppColors.textColor),
+            icon: Icon(widget.config.iconBack, color: widget.config.textColor),
           ),
           title: Text(
             i18n('Add filters'),
-            style: const TextStyle(color: AppColors.textColor, fontSize: 18),
+            style: widget.config.titleStyle,
           ),
           centerTitle: true,
           actions: [
             IconButton(
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              icon: const Icon(Icons.check, color: AppColors.mediaColor),
+              icon: Icon(
+                widget.config.iconSave,
+                color: widget.config.primaryColor,
+              ),
               onPressed: () async {
-                loadingScreen.show();
+                loadingScreen.show(config: widget.config);
                 var data = await screenshotController.capture();
                 loadingScreen.hide();
                 if (mounted) Navigator.pop(context, data);
@@ -1048,8 +1033,8 @@ class _ImageFiltersState extends State<ImageFilters> {
           alignment: Alignment.bottomCenter,
           height: 190 + MediaQuery.of(context).padding.bottom,
           padding: const EdgeInsets.symmetric(vertical: 4),
-          decoration: const BoxDecoration(
-            color: AppColors.backgroundLighter,
+          decoration: BoxDecoration(
+            color: widget.config.backgroundColor,
             shape: BoxShape.rectangle,
           ),
           child: Column(
@@ -1063,9 +1048,9 @@ class _ImageFiltersState extends State<ImageFilters> {
                         SliderTheme(
                           data: SliderTheme.of(context).copyWith(
                             trackHeight: 1.0,
-                            activeTrackColor: AppColors.mediaColor,
-                            inactiveTrackColor: AppColors.mediaColor,
-                            thumbColor: AppColors.mediaColor,
+                            activeTrackColor: widget.config.primaryColor,
+                            inactiveTrackColor: widget.config.primaryColor,
+                            thumbColor: widget.config.primaryColor,
                             thumbShape: const RoundSliderThumbShape(
                               enabledThumbRadius: 10.0,
                             ),
@@ -1107,8 +1092,8 @@ class _ImageFiltersState extends State<ImageFilters> {
                                 borderRadius: BorderRadius.circular(48),
                                 border: Border.all(
                                   color: selectedFilter == filter
-                                      ? AppColors.mediaColor
-                                      : AppColors.mediaAccentColor,
+                                      ? widget.config.primaryColor
+                                      : widget.config.secondaryColor,
                                   width: 2,
                                 ),
                               ),
@@ -1124,7 +1109,7 @@ class _ImageFiltersState extends State<ImageFilters> {
                             ),
                             Text(
                               i18n(filter.name),
-                              style: const TextStyle(fontSize: 12),
+                              style: widget.config.normalStyle,
                             ),
                           ],
                         ),

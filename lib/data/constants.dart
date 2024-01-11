@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color backgroundLighter = Colors.white;
+  // Background color
+  static const Color backgroundColor = Colors.white;
+  // Text color
   static const Color textColor = Color(0xFF252525);
-  static const Color accent = Color(0xFFFF10AA);
-  static const Color mediumAccent = Color(0xFF9E1F63);
-  static const Color mediaColor = Colors.pink;
-  static const Color mediaAccentColor = Color.fromARGB(255, 97, 97, 97);
-  static const Color textIconPostColor = Color.fromRGBO(37, 37, 37, 1.0);
+  // Primary color
+  static const Color primaryColor = Color(0xFFF05632);
+  // Secondary color
+  static const Color secondaryColor = Color.fromARGB(255, 97, 97, 97);
 }
 
 class TextStyles {
-  static const titlePost = TextStyle(
+  static const title = TextStyle(
     fontWeight: FontWeight.w500,
-    fontSize: 19,
-    color: AppColors.textIconPostColor,
+    fontSize: 18,
+    color: AppColors.textColor,
   );
-}
 
-class AppIcons {
-  static const String icon = 'assets/icon.png';
+  static const text = TextStyle(
+    fontWeight: FontWeight.w500,
+    fontSize: 14,
+    color: AppColors.textColor,
+  );
 }

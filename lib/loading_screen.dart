@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:image_editor_plus/data/constants.dart';
+import 'package:image_editor_plus/data/settings.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 
 class LoadingScreen {
@@ -7,7 +7,7 @@ class LoadingScreen {
 
   LoadingScreen(this.globalKey);
 
-  show([String? text]) {
+  show({Settings config = const Settings()}) {
     if (globalKey.currentContext == null) return;
 
     showDialog<String>(
@@ -24,23 +24,20 @@ class LoadingScreen {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const CircularProgressIndicator(
+                    CircularProgressIndicator(
                       semanticsLabel: 'Linear progress indicator',
-                      color: AppColors.accent,
+                      color: config.primaryColor,
                     ),
                     const SizedBox(width: 24),
                     Text(
                       i18n('Processing...'),
-                      style: const TextStyle(
-                        color: AppColors.textColor,
-                        fontSize: 14,
-                      ),
+                      style: config.normalStyle,
                     ),
                   ],
                 ),
                 actionsAlignment: MainAxisAlignment.center,
                 actionsPadding: const EdgeInsets.symmetric(vertical: 10),
-                backgroundColor: Colors.white,
+                backgroundColor: config.backgroundColor,
               ),
             ),
           ),
